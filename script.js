@@ -256,7 +256,7 @@ document.querySelector('.download-btn').addEventListener('click', () => {
     setTimeout(() => ripple.remove(), 600);
 
     // Buka CV di tab baru
-    window.open('CV-RAIHANAH.pdf', '_blank');
+    window.open('SASHA-CV.pdf', '_blank');
 });
 
 
