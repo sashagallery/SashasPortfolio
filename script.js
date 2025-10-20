@@ -338,6 +338,46 @@ projectCards.forEach(card => {
     });
 });
 
+// Project Image Lightbox for Figma Screenshots
+document.addEventListener('DOMContentLoaded', () => {
+    const projectImages = document.querySelectorAll('.project-image img');
+    
+    projectImages.forEach(img => {
+        img.style.cursor = 'pointer';
+        
+        img.addEventListener('click', function(e) {
+            e.stopPropagation();
+            
+            const modal = document.createElement('div');
+            modal.className = 'image-lightbox';
+            modal.innerHTML = `
+                <div class="lightbox-backdrop"></div>
+                <div class="lightbox-content">
+                    <span class="lightbox-close">&times;</span>
+                    <img src="${this.src}" alt="${this.alt}">
+                    <div class="lightbox-caption">${this.alt}</div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            document.body.style.overflow = 'hidden';
+            
+            const closeModal = () => {
+                modal.style.opacity = '0';
+                setTimeout(() => {
+                    modal.remove();
+                    document.body.style.overflow = 'auto';
+                }, 300);
+            };
+            
+            modal.querySelector('.lightbox-close').addEventListener('click', closeModal);
+            modal.querySelector('.lightbox-backdrop').addEventListener('click', closeModal);
+            
+            setTimeout(() => modal.style.opacity = '1', 10);
+        });
+    });
+});
+
 // Tech stack icons animation on hover
 const techItems = document.querySelectorAll('.tech-item');
 
@@ -535,6 +575,171 @@ navStyle.textContent = `
     }
 `;
 document.head.appendChild(navStyle);
+// Carousel Functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const carousel = document.querySelector('.carousel-container');
+    if (!carousel) return;
+    
+    const slides = carousel.querySelectorAll('.carousel-slide');
+    const indicators = carousel.querySelectorAll('.indicator');
+    const prevBtn = carousel.querySelector('.prev-btn');
+    const nextBtn = carousel.querySelector('.next-btn');
+    
+    let currentSlide = 0;
+    let isAnimating = false;
+    
+    function showSlide(index) {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        // Remove active class from all
+        slides.forEach(slide => slide.classList.remove('active'));
+        indicators.forEach(ind => ind.classList.remove('active'));
+        
+        // Add active to current
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+        
+        currentSlide = index;
+        
+        setTimeout(() => {
+            isAnimating = false;
+        }, 500);
+    }
+    
+    function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+    }
+    
+    function prevSlide() {
+        const prev = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prev);
+    }
+    
+    // Button events
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // Indicator events
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showSlide(index);
+        });
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') prevSlide();
+        if (e.key === 'ArrowRight') nextSlide();
+    });
+    
+    // Auto-play (optional)
+    let autoplayInterval = setInterval(nextSlide, 4000);
+    
+    // Pause on hover
+    carousel.addEventListener('mouseenter', () => {
+        clearInterval(autoplayInterval);
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+        autoplayInterval = setInterval(nextSlide, 4000);
+    });
+    
+    // Touch/Swipe support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carousel.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    carousel.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        handleSwipe();
+    });
+    
+    function handleSwipe() {
+        if (touchEndX < touchStartX - 50) nextSlide(); // Swipe left
+        if (touchEndX > touchStartX + 50) prevSlide(); // Swipe right
+    }
+});
+
+// Landscape Carousel Functionality
+document.addEventListener('DOMContentLoaded', () => {
+    const carouselLandscape = document.querySelector('.carousel-landscape');
+    if (!carouselLandscape) return;
+    
+    const slides = carouselLandscape.querySelectorAll('.carousel-slide-landscape');
+    const indicators = carouselLandscape.querySelectorAll('.indicator-landscape');
+    const prevBtn = carouselLandscape.querySelector('.prev-btn-landscape');
+    const nextBtn = carouselLandscape.querySelector('.next-btn-landscape');
+    
+    let currentSlide = 0;
+    let isAnimating = false;
+    
+    function showSlide(index) {
+        if (isAnimating) return;
+        isAnimating = true;
+        
+        slides.forEach(slide => slide.classList.remove('active'));
+        indicators.forEach(ind => ind.classList.remove('active'));
+        
+        slides[index].classList.add('active');
+        indicators[index].classList.add('active');
+        
+        currentSlide = index;
+        
+        setTimeout(() => {
+            isAnimating = false;
+        }, 500);
+    }
+    
+    function nextSlide() {
+        const next = (currentSlide + 1) % slides.length;
+        showSlide(next);
+    }
+    
+    function prevSlide() {
+        const prev = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(prev);
+    }
+    
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    indicators.forEach((indicator, index) => {
+        indicator.addEventListener('click', () => {
+            showSlide(index);
+        });
+    });
+    
+    // Auto-play
+    let autoplayInterval = setInterval(nextSlide, 4000);
+    
+    carouselLandscape.addEventListener('mouseenter', () => {
+        clearInterval(autoplayInterval);
+    });
+    
+    carouselLandscape.addEventListener('mouseleave', () => {
+        autoplayInterval = setInterval(nextSlide, 4000);
+    });
+    
+    // Touch support
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    carouselLandscape.addEventListener('touchstart', (e) => {
+        touchStartX = e.changedTouches[0].screenX;
+    });
+    
+    carouselLandscape.addEventListener('touchend', (e) => {
+        touchEndX = e.changedTouches[0].screenX;
+        if (touchEndX < touchStartX - 50) nextSlide();
+        if (touchEndX > touchStartX + 50) prevSlide();
+    });
+});
+
 
 console.log('🎨 Portfolio loaded successfully!');
 console.log('✨ All animations activated!');
