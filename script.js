@@ -40,6 +40,13 @@ window.addEventListener('load', () => {
         card.style.opacity = '1';
         card.style.transform = 'translateY(0)';
     });
+    
+    // Also ensure Projects 2 cards are visible
+    const project2Cards = document.querySelectorAll('#projects2 .project-card');
+    project2Cards.forEach(card => {
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    });
 });
 
 // Smooth Scrolling
@@ -104,7 +111,7 @@ function animateCards(tabName) {
     
     // Get all cards based on tab type
     let allCards;
-    if (tabName === 'projects') {
+    if (tabName === 'projects' || tabName === 'projects2') {
         allCards = container.querySelectorAll('.project-card');
     } else if (tabName === 'certificates' || tabName === 'othercertificates') {
         allCards = container.querySelectorAll('.certificate-card');
@@ -114,20 +121,206 @@ function animateCards(tabName) {
     
     if (!allCards || allCards.length === 0) return;
     
-    // Reset and animate cards
+    // Ensure cards are visible initially
+    allCards.forEach(card => {
+        card.style.transition = 'none';
+        card.style.opacity = '1';
+        card.style.transform = 'translateY(0)';
+    });
+    
+    // Force reflow
+    void container.offsetHeight;
+    
+    // Animate with stagger
     allCards.forEach((card, index) => {
-        // Set initial hidden state
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(30px)';
-        
-        // Animate with delay
         setTimeout(() => {
             card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
             card.style.opacity = '1';
             card.style.transform = 'translateY(0)';
-        }, index * 100);
+        }, index * 50);
     });
 }
+
+// Carousel Functionality with Lightbox
+class Carousel {
+    constructor(carouselId) {
+        this.carouselId = carouselId;
+        this.container = document.querySelector(`[data-carousel-id="${carouselId}"]`);
+        this.images = this.container.querySelectorAll('img');
+        this.dots = document.querySelectorAll(`[data-dots="${carouselId}"] .dot`);
+        this.prevBtn = document.querySelector(`.carousel-btn.prev[data-carousel="${carouselId}"]`);
+        this.nextBtn = document.querySelector(`.carousel-btn.next[data-carousel="${carouselId}"]`);
+        this.currentIndex = 0;
+        this.autoplayInterval = null;
+        this.lightbox = null;
+        
+        this.init();
+    }
+    
+    init() {
+        // Button events
+        this.prevBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.prev();
+            this.resetAutoplay();
+        });
+        
+        this.nextBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.next();
+            this.resetAutoplay();
+        });
+        
+        // Dot events
+        this.dots.forEach((dot, index) => {
+            dot.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.goTo(index);
+                this.resetAutoplay();
+            });
+        });
+        
+        // Image click for lightbox
+        this.images.forEach((img, index) => {
+            img.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.openLightbox(index);
+            });
+        });
+        
+        // Start autoplay
+        this.startAutoplay();
+        
+        // Pause on hover
+        this.container.parentElement.addEventListener('mouseenter', () => this.stopAutoplay());
+        this.container.parentElement.addEventListener('mouseleave', () => this.startAutoplay());
+    }
+    
+    goTo(index) {
+        this.images[this.currentIndex].classList.remove('active');
+        this.dots[this.currentIndex].classList.remove('active');
+        
+        this.currentIndex = index;
+        
+        this.images[this.currentIndex].classList.add('active');
+        this.dots[this.currentIndex].classList.add('active');
+    }
+    
+    next() {
+        const nextIndex = (this.currentIndex + 1) % this.images.length;
+        this.goTo(nextIndex);
+    }
+    
+    prev() {
+        const prevIndex = (this.currentIndex - 1 + this.images.length) % this.images.length;
+        this.goTo(prevIndex);
+    }
+    
+    startAutoplay() {
+        this.autoplayInterval = setInterval(() => this.next(), 3000);
+    }
+    
+    stopAutoplay() {
+        if (this.autoplayInterval) {
+            clearInterval(this.autoplayInterval);
+        }
+    }
+    
+    resetAutoplay() {
+        this.stopAutoplay();
+        this.startAutoplay();
+    }
+    
+    openLightbox(index) {
+        this.stopAutoplay();
+        
+        // Create lightbox
+        this.lightbox = document.createElement('div');
+        this.lightbox.className = 'carousel-lightbox';
+        this.lightbox.innerHTML = `
+            <div class="carousel-lightbox-backdrop"></div>
+            <div class="carousel-lightbox-content">
+                <button class="lightbox-close">&times;</button>
+                <button class="lightbox-nav prev">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <img src="${this.images[index].src}" alt="${this.images[index].alt}">
+                <button class="lightbox-nav next">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                <div class="lightbox-counter">
+                    <span class="current">${index + 1}</span> / ${this.images.length}
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(this.lightbox);
+        document.body.style.overflow = 'hidden';
+        
+        // Animate lightbox
+        setTimeout(() => this.lightbox.classList.add('active'), 10);
+        
+        let lightboxIndex = index;
+        const lightboxImg = this.lightbox.querySelector('img');
+        const counter = this.lightbox.querySelector('.current');
+        
+        // Navigation in lightbox
+        const updateLightbox = (newIndex) => {
+            lightboxIndex = newIndex;
+            lightboxImg.src = this.images[lightboxIndex].src;
+            lightboxImg.alt = this.images[lightboxIndex].alt;
+            counter.textContent = lightboxIndex + 1;
+        };
+        
+        // Lightbox prev button
+        this.lightbox.querySelector('.lightbox-nav.prev').addEventListener('click', () => {
+            const prevIndex = (lightboxIndex - 1 + this.images.length) % this.images.length;
+            updateLightbox(prevIndex);
+        });
+        
+        // Lightbox next button
+        this.lightbox.querySelector('.lightbox-nav.next').addEventListener('click', () => {
+            const nextIndex = (lightboxIndex + 1) % this.images.length;
+            updateLightbox(nextIndex);
+        });
+        
+        // Close lightbox
+        const closeLightbox = () => {
+            this.lightbox.classList.remove('active');
+            setTimeout(() => {
+                this.lightbox.remove();
+                document.body.style.overflow = 'auto';
+                this.startAutoplay();
+            }, 300);
+        };
+        
+        this.lightbox.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+        this.lightbox.querySelector('.carousel-lightbox-backdrop').addEventListener('click', closeLightbox);
+        
+        // Keyboard navigation
+        const handleKeyboard = (e) => {
+            if (e.key === 'Escape') {
+                closeLightbox();
+                document.removeEventListener('keydown', handleKeyboard);
+            } else if (e.key === 'ArrowLeft') {
+                const prevIndex = (lightboxIndex - 1 + this.images.length) % this.images.length;
+                updateLightbox(prevIndex);
+            } else if (e.key === 'ArrowRight') {
+                const nextIndex = (lightboxIndex + 1) % this.images.length;
+                updateLightbox(nextIndex);
+            }
+        };
+        
+        document.addEventListener('keydown', handleKeyboard);
+    }
+}
+
+// Initialize all carousels
+document.addEventListener('DOMContentLoaded', () => {
+    const foodieCarousel = new Carousel('foodie');
+    const wordpressCarousel = new Carousel('wordpress');
+    const androidCarousel = new Carousel('android');
+});
 
 // Certificate modal/lightbox (optional - click to view larger)
 document.addEventListener('DOMContentLoaded', () => {
@@ -524,6 +717,8 @@ window.addEventListener('scroll', () => {
         }
     });
 });
+
+
 
 // Add active state style
 const navStyle = document.createElement('style');

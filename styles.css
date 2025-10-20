@@ -501,6 +501,130 @@ body {
     transform: scale(1.05);
 }
 
+/* Carousel Styling */
+.carousel-card {
+    position: relative;
+}
+
+.carousel-container {
+    position: relative;
+    width: 100%;
+    height: 250px;
+    overflow: hidden;
+    border-radius: 15px 15px 0 0;
+    background: transparent;
+}
+
+.portrait-carousel {
+    height: 400px;
+}
+
+.carousel-images {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.carousel-images img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ubah dari contain ke cover */
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+
+.carousel-images img.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tidal-depths);
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    z-index: 2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.carousel-btn:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn.prev {
+    left: 10px;
+}
+
+.carousel-btn.next {
+    right: 10px;
+}
+
+.carousel-dots {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 2;
+}
+
+.dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: white;
+    width: 30px;
+    border-radius: 5px;
+}
+
+.dot:hover {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Portrait Grid */
+.portrait-grid {
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.portrait-card {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Figma Link */
+.figma-link {
+    background: linear-gradient(135deg, #F24E1E, #FF7262);
+}
+
+.figma-link:hover {
+    background: linear-gradient(135deg, #FF7262, #F24E1E);
+}
+
 
 .certificates-grid {
     display: grid;
@@ -600,6 +724,157 @@ body {
 .modal-close:hover {
     color: var(--ocean-haze);
     transform: rotate(90deg);
+}
+
+/* Carousel Image Lightbox */
+.carousel-images img {
+    cursor: pointer;
+}
+
+.carousel-lightbox {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.carousel-lightbox.active {
+    display: flex;
+    opacity: 1;
+}
+
+.carousel-lightbox-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    cursor: pointer;
+}
+
+.carousel-lightbox-content {
+    position: relative;
+    max-width: 95%;
+    max-height: 95%;
+    z-index: 10000;
+    animation: lightboxZoom 0.3s ease;
+}
+
+.carousel-lightbox-content img {
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    object-fit: contain;
+}
+
+.lightbox-close {
+    position: absolute;
+    top: -50px;
+    right: 0;
+    font-size: 50px;
+    color: white;
+    cursor: pointer;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    z-index: 10001;
+    background: none;
+    border: none;
+    width: 50px;
+    height: 50px;
+}
+
+.lightbox-close:hover {
+    color: var(--ocean-haze);
+    transform: rotate(90deg);
+}
+
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--tidal-depths);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 10001;
+}
+
+.lightbox-nav:hover {
+    background: white;
+    transform: translateY(-50%) scale(1.1);
+}
+
+.lightbox-nav.prev {
+    left: 20px;
+}
+
+.lightbox-nav.next {
+    right: 20px;
+}
+
+.lightbox-counter {
+    position: absolute;
+    bottom: -50px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 500;
+}
+
+@keyframes lightboxZoom {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .lightbox-close {
+        top: -40px;
+        font-size: 40px;
+        right: 10px;
+    }
+    
+    .lightbox-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .lightbox-nav.prev {
+        left: 10px;
+    }
+    
+    .lightbox-nav.next {
+        right: 10px;
+    }
+    
+    .lightbox-counter {
+        bottom: -40px;
+        font-size: 1rem;
+    }
 }
 
 @keyframes modalZoom {
@@ -777,6 +1052,28 @@ footer {
 /* Responsive */
 /* Responsive */
 @media (max-width: 768px) {
+    /* existing mobile styles... */
+    
+    .portrait-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .carousel-container {
+        height: 180px;
+    }
+    
+    .portrait-carousel {
+        height: 350px;
+        object-fit: contain;
+        
+    }
+    
+    .carousel-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+
     .hero-content {
         flex-direction: column-reverse;
         text-align: center;
@@ -833,13 +1130,9 @@ footer {
 }
 
 .project-image {
-    position: relative;
     width: 100%;
-    overflow: hidden;
+    height: 200px;
     background: linear-gradient(135deg, var(--ocean-haze), var(--driftwood-teal));
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 /* Mobile App Design - Portrait */
@@ -923,6 +1216,8 @@ footer {
     font-size: 0.9rem;
     font-weight: 500;
 }
+
+
 
 .figma-link {
     background: linear-gradient(135deg, #F24E1E, #FF7262);
