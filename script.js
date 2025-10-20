@@ -56,6 +56,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
+
 // Navbar Scroll Effect
 let lastScroll = 0;
 const navbar = document.querySelector('.navbar');
@@ -73,6 +74,7 @@ window.addEventListener('scroll', () => {
     
     lastScroll = currentScroll;
 });
+
 
 // Tab Switching
 const tabButtons = document.querySelectorAll('.tab-btn');
